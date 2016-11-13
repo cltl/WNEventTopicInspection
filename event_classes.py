@@ -1,5 +1,19 @@
 from nltk.corpus import wordnet as wn
 
+
+def create_ili(synset):
+    """
+    create ili of synset
+    
+    :param nltk.corpus.reader.wordnet.Synset synset: synset instance from nltk
+    """
+    pos = synset.pos()
+    if pos == 's':
+        pos = 'a'
+    offset = str(synset.offset()).zfill(8)
+    ili = 'ili-30-%s-%s' % (offset, pos)
+    return ili
+
 class LexExpr:
     def __init__(self, lexical_expression):
         self.lexical_expression = lexical_expression
@@ -8,7 +22,8 @@ class LexExpr:
     @property
     def wn_ambiguity(self):
         return len(wn.synsets(self.lexical_expression))
-                
+    
+    
     @property
     def event_ambiguity(self):
         return len(self.event_meanings)
@@ -23,9 +38,10 @@ class LexExpr:
         results = []
         for event_meaning in self.event_meanings:
             local = ';'.join([synset.definition()
-                              for synset in event_meaning.wn_synsets])
+                              for synset, ili in event_meaning.wn_synsets])
             results.append(local)
         return ' AND '.join(results)
+    
         
 class EventMeaning:
     def __init__(self, ev_meaning_id, wn_meanings, domain):
@@ -36,8 +52,14 @@ class EventMeaning:
     
     @property
     def wn_synsets(self):
-        return {wn.synset(wn_meaning) 
+        return {(wn.synset(wn_meaning), create_ili(wn.synset(wn_meaning)))
                 for wn_meaning in self.wn_meanings}
+    
+    @property
+    def hyponyms(self):
+        return {(hyponym, create_ili(hyponym))
+                for synset, ili in self.wn_synsets
+                for hyponym in synset.hyponyms()}
     
     @property
     def ili_defs(self):
@@ -54,7 +76,7 @@ class EventMeaning:
 
     def get_lexical_expressions(self):
         return {lemma_name 
-                for synset in self.wn_synsets
+                for synset, ili in self.wn_synsets
                 for lemma_name in synset.lemma_names()}
     
     @property
