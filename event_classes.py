@@ -6,6 +6,10 @@ class LexExpr:
         self.event_meanings = set()
     
     @property
+    def wn_ambiguity(self):
+        return len(wn.synsets(self.lexical_expression))
+                
+    @property
     def event_ambiguity(self):
         return len(self.event_meanings)
     
@@ -34,6 +38,19 @@ class EventMeaning:
     def wn_synsets(self):
         return {wn.synset(wn_meaning) 
                 for wn_meaning in self.wn_meanings}
+    
+    @property
+    def ili_defs(self):
+        ilis = set()
+        for synset in self.wn_synsets:
+            pos = synset.pos()
+            if pos == 's':
+                pos = 'a'
+            offset = str(synset.offset()).zfill(8)
+            ili = 'ili-30-%s-%s' % (offset, pos)
+            ilis.add(ili)
+        return ilis
+            
 
     def get_lexical_expressions(self):
         return {lemma_name 

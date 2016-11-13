@@ -37,7 +37,7 @@ def load_it(domain2lex_expr2ev_meanings):
     return lex_expr_objs, ev_meaning_objs
 
             
-def show_me(main_dict, keys, headers):
+def show_me(main_dict, keys, headers, meta=set()):
     """
     this function shows in a html table
     for the keys of the main dict the headers (attributes)
@@ -46,6 +46,9 @@ def show_me(main_dict, keys, headers):
     (see notebook 'Domain2lexical expression2event meanings.ipynb'
     :pararm iterable keys: keys from the main_dict to inspect
     :param list headers: the attribute you want to inspect from the keys
+    :param set meta: keys for which you want to show:
+    1. number of items
+    2. average of values
     
     :rtype: IPython.core.display.HTML
     :return: the results in a html table
@@ -62,6 +65,17 @@ def show_me(main_dict, keys, headers):
         rows.append(row)
     
     df = pandas.DataFrame(rows, columns=headers)
-
+    
+    if meta:
+        print('number of rows: %s' % len(df))
+        for key in meta:
+            minimum = min(df[key])
+            maximum = max(df[key])
+            average = sum(df[key]) / len(df)
+            print('%s: min(%s), avg(%s), max(%s)' % (key, 
+                                                     minimum, 
+                                                     round(average, 2),
+                                                     maximum))
+    
     table = tabulate(df, headers='keys', tablefmt='html')
     return table
