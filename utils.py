@@ -47,7 +47,7 @@ def show_me(main_dict, keys, headers, meta=set()):
     :param list headers: the attribute you want to inspect from the keys
     :param set meta: keys for which you want to show:
     1. number of items
-    2. average of values
+    2. minimum, average, and maximum
     
     :rtype: IPython.core.display.HTML
     :return: the results in a html table
