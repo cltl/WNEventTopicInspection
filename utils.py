@@ -2,12 +2,12 @@ import pandas
 from tabulate import tabulate
 import event_classes
 
-def load_it(domain2lex_expr2ev_meanings):
+def load_it(domain2lex_expr_and_ev_meanings2ecb_topics):
     """
     load all manual annotations into class instances
     
-    :param dict domain2lex_expr2ev_meanings: mapping from
-    'domain' -> lexical expression -> event meaning
+    :param dict domain2lex_expr_and_ev_meanings2ecb_topics: mapping from
+    'domain' -> (lexical expression, event meaning) -> ecb(+) topics
     
     :rtype: tuple
     :return: (lex_expr_objs, ev_meaning_objs)
@@ -16,14 +16,13 @@ def load_it(domain2lex_expr2ev_meanings):
     lex_expr_objs = {}
     ev_meaning_objs = {}
 
-    for domain, info in domain2lex_expr2ev_meanings.items():
-        for lex_exprs, wn_meanings in info.items():
+    for domain, info in domain2lex_expr_and_ev_meanings2ecb_topics.items():
+        for (lex_exprs, ev_meaning_id), ecb_topics in info.items():
             for lex_expr in lex_exprs:
 
-                ev_meaning_id = frozenset(wn_meanings)
                 if ev_meaning_id not in ev_meaning_objs:
                     ev_meaning_obj = event_classes.EventMeaning(ev_meaning_id, 
-                                                                wn_meanings, 
+                                                                ecb_topics,
                                                                 domain)
                     ev_meaning_objs[ev_meaning_id] = ev_meaning_obj
                 ev_meaning_obj = ev_meaning_objs[ev_meaning_id]

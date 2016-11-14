@@ -23,6 +23,11 @@ class LexExpr:
     def wn_ambiguity(self):
         return len(wn.synsets(self.lexical_expression))
     
+    @property
+    def ecb_topics(self):
+        return {ecb_topic
+                for ev_meaning_obj in self.event_meanings
+                for ecb_topic in ev_meaning_obj.ecb_topics}
     
     @property
     def event_ambiguity(self):
@@ -44,16 +49,16 @@ class LexExpr:
     
         
 class EventMeaning:
-    def __init__(self, ev_meaning_id, wn_meanings, domain):
+    def __init__(self, ev_meaning_id, ecb_topics, domain):
         self.ev_meaning_id = ev_meaning_id
-        self.wn_meanings = wn_meanings
+        self.ecb_topics = ecb_topics
         self.lexical_expressions = self.get_lexical_expressions()
         self.domain = domain
     
     @property
     def wn_synsets(self):
         return {(wn.synset(wn_meaning), create_ili(wn.synset(wn_meaning)))
-                for wn_meaning in self.wn_meanings}
+                for wn_meaning in self.ev_meaning_id}
     
     @property
     def hyponyms(self):
